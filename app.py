@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from dotenv import load_dotenv
 import requests
 import os
@@ -30,34 +30,39 @@ def get_bearer_token():
 
 @app.route('/')
 def index():
-    return ""
+    return render_template('index.html')
 
-@app.route('/artists')
-def auth():
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/search')
+def search():
     hed = { "Authorization": get_bearer_token() }
     args = request.args
 
-    search = ""
-    if "search" in args:
-        search = urllib.parse.quote_plus(args.get("search"))
-    else:
-        return "Please add a search parameter!"
+    # search = ""
+    # if "search" in args:
+    #     search = urllib.parse.quote_plus(args.get("search"))
+    # else:
+    #     return "Please add a search parameter!"
 
-    search_url = ("https://api.spotify.com/v1/search?type=artist&market=AU&limit=1&query=%s" % search)
-    response = requests.get(search_url, headers=hed)
-    if response.status_code == 200:
-        search_json = response.json()
-        print (search_json)
-        spotify_id = search_json['artists']['items'][0]['id']
+    # search_url = ("https://api.spotify.com/v1/search?type=artist&market=AU&limit=1&query=%s" % search)
+    # response = requests.get(search_url, headers=hed)
+    # if response.status_code == 200:
+    #     search_json = response.json()
+    #     print (search_json)
+    #     spotify_id = search_json['artists']['items'][0]['id']
 
-    if spotify_id:
-        tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % spotify_id)
-        response = requests.get(tracks_url, headers=hed)
-        if response.status_code == 200:
-            top_tracks_json = response.json()
-            top_tracks = {}
-            for i in range(len(top_tracks_json['tracks'])):
-                top_tracks[i] = top_tracks_json['tracks'][i]['name']
-            return top_tracks
+    # if spotify_id:
+    #     tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % spotify_id)
+    #     response = requests.get(tracks_url, headers=hed)
+    #     if response.status_code == 200:
+    #         top_tracks_json = response.json()
+    #         top_tracks = {}
+    #         for i in range(len(top_tracks_json['tracks'])):
+    #             top_tracks[i] = top_tracks_json['tracks'][i]['name']
+            # return top_tracks
 
-    return "No artist found!"
+    return render_template('search.html')
+    
