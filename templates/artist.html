@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {{ artist['name'] }}
+    <img src="{{ artist['img']['url'] }}" height="{{ artist['img']['height'] }}" width="{{ artist['img']['width'] }}">
+
+    <br>
+    Top Tracks:
+    <ul>
+    {% for track in tracks.items() %}
+        <li>{{ track }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+

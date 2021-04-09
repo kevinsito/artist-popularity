@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    Please enter an artist name: <input>
+    <form method="POST">
+        Please enter an artist name: <input name="search">
+        <input type="submit">
+    </form>
+
+    {{ spotifyId }}
 {% endblock %}
 

@@ -36,33 +36,35 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     hed = { "Authorization": get_bearer_token() }
     args = request.args
+    artist = {}
+    spotify_id = 0
+    top_tracks = {}
 
-    # search = ""
-    # if "search" in args:
-    #     search = urllib.parse.quote_plus(args.get("search"))
-    # else:
-    #     return "Please add a search parameter!"
+    if request.method == 'POST':
+        search = urllib.parse.quote_plus(request.form['search'])
 
-    # search_url = ("https://api.spotify.com/v1/search?type=artist&market=AU&limit=1&query=%s" % search)
-    # response = requests.get(search_url, headers=hed)
-    # if response.status_code == 200:
-    #     search_json = response.json()
-    #     print (search_json)
-    #     spotify_id = search_json['artists']['items'][0]['id']
+        search_url = ("https://api.spotify.com/v1/search?type=artist&market=AU&limit=1&query=%s" % search)
+        response = requests.get(search_url, headers=hed)
+        if response.status_code == 200:
+            search_json = response.json()
+            print (search_json)
+            artist['id'] = search_json['artists']['items'][0]['id']
+            artist['name'] = search_json['artists']['items'][0]['name']
+            artist['img'] = search_json['artists']['items'][0]['images'][2]
 
-    # if spotify_id:
-    #     tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % spotify_id)
-    #     response = requests.get(tracks_url, headers=hed)
-    #     if response.status_code == 200:
-    #         top_tracks_json = response.json()
-    #         top_tracks = {}
-    #         for i in range(len(top_tracks_json['tracks'])):
-    #             top_tracks[i] = top_tracks_json['tracks'][i]['name']
-            # return top_tracks
+        if artist['id']:
+            tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % artist['id'])
+            response = requests.get(tracks_url, headers=hed)
+            if response.status_code == 200:
+                top_tracks_json = response.json()
+                for i in range(len(top_tracks_json['tracks'])):
+                    top_tracks[i] = top_tracks_json['tracks'][i]['name']
+
+        return render_template('artist.html', artist=artist, tracks=top_tracks)
 
     return render_template('search.html')
     
