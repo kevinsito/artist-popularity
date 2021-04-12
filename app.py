@@ -55,14 +55,22 @@ def search():
             artist['id'] = search_json['artists']['items'][0]['id']
             artist['name'] = search_json['artists']['items'][0]['name']
             artist['img'] = search_json['artists']['items'][0]['images'][2]
+            artist['followers'] = search_json['artists']['items'][0]['followers']['total']
+            artist['popularity'] = search_json['artists']['items'][0]['popularity']
 
         if artist['id']:
             tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % artist['id'])
             response = requests.get(tracks_url, headers=hed)
             if response.status_code == 200:
                 top_tracks_json = response.json()
-                for i in range(len(top_tracks_json['tracks'])):
-                    top_tracks[i] = top_tracks_json['tracks'][i]['name']
+                for i, track in enumerate(top_tracks_json['tracks']):
+                    track_obj = {
+                        'album': track['album']['name'],
+                        'popularity': track['popularity'],
+                        'releaseDate': track['album']['release_date'],
+                        'img': track['album']['images'][2]
+                    }
+                    top_tracks[track['name']] = track_obj
 
         return render_template('artist.html', artist=artist, tracks=top_tracks)
 

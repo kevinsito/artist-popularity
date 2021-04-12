@@ -2,13 +2,22 @@
 
 {% block content %}
     {{ artist['name'] }}
+    <br>
     <img src="{{ artist['img']['url'] }}" height="{{ artist['img']['height'] }}" width="{{ artist['img']['width'] }}">
+    <br>
+    Followers: {{ artist['followers'] }}
+    <br>
+    Popularity: {{ artist['popularity'] }}
 
     <br>
     Top Tracks:
     <ul>
-    {% for track in tracks.items() %}
-        <li>{{ track }}</li>
+    {% for name, track in tracks.items() %}
+        <li>{{ name }}</li>
+        <li>Popularity: {{ track.popularity }} </li>
+        <li>Album: {{ track.album }}
+            <img src="{{ track.img.url }}" height="{{ track.img.height }}" width="{{ track.img.width }}">
+        </li>
     {% endfor %}
     </ul>
 {% endblock %}
