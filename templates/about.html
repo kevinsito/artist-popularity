@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+    <!-- React -->
+    {% block content %}
 
-{% block content %}
-    <h3>This app allows one to search the Spotify API for their favourite artists' info & tracks.</h3>
-    <h6>Written by Kevin Sito.</h3>
-{% endblock %}
+    <!-- My CSS -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+      <div id="app"></div>
+      <script src="{{ url_for('static', filename='dist/bundle.js') }}"></script>
+    {% endblock %}

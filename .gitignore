@@ -2,3 +2,7 @@ __pycache__/*
 .tool-versions
 .env
 
+static/node_modules/*
+venv/*
+.vscode/*
+static/dist/*
