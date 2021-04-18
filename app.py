@@ -54,7 +54,7 @@ def search():
             print (search_json)
             artist['id'] = search_json['artists']['items'][0]['id']
             artist['name'] = search_json['artists']['items'][0]['name']
-            artist['img'] = search_json['artists']['items'][0]['images'][2]
+            artist['img'] = search_json['artists']['items'][0]['images'][0]
             artist['followers'] = search_json['artists']['items'][0]['followers']['total']
             artist['popularity'] = search_json['artists']['items'][0]['popularity']
 
@@ -68,7 +68,7 @@ def search():
                         'album': track['album']['name'],
                         'popularity': track['popularity'],
                         'releaseDate': track['album']['release_date'],
-                        'img': track['album']['images'][2]
+                        'img': track['album']['images'][0]
                     }
                     top_tracks[track['name']] = track_obj
 
