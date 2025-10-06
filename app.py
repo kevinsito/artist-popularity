@@ -1,9 +1,9 @@
 from flask import Flask, request, render_template
 from dotenv import load_dotenv
+from models import Artist, Track
 import requests
 import os
 import base64
-import json
 import urllib
 
 load_dotenv()
@@ -26,7 +26,7 @@ def get_bearer_token():
     if response.status_code == 200:
         oauth_obj = response.json()
         return "Bearer " + oauth_obj['access_token']
-    return null
+    return None
 
 @app.route('/')
 def index():
@@ -39,9 +39,7 @@ def about():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     hed = { "Authorization": get_bearer_token() }
-    args = request.args
     artist = {}
-    spotify_id = 0
     top_tracks = {}
 
     if request.method == 'POST':
@@ -52,11 +50,14 @@ def search():
         if response.status_code == 200:
             search_json = response.json()
             print (search_json)
-            artist['id'] = search_json['artists']['items'][0]['id']
-            artist['name'] = search_json['artists']['items'][0]['name']
-            artist['img'] = search_json['artists']['items'][0]['images'][0]
-            artist['followers'] = search_json['artists']['items'][0]['followers']['total']
-            artist['popularity'] = search_json['artists']['items'][0]['popularity']
+            artist_obj = Artist(
+                id=search_json['artists']['items'][0]['id'],
+                name=search_json['artists']['items'][0]['name'],
+                img=search_json['artists']['items'][0]['images'][0],
+                followers=search_json['artists']['items'][0]['followers']['total'],
+                popularity=search_json['artists']['items'][0]['popularity']
+            )
+            artist = artist_obj.to_dict()
 
         if artist['id']:
             tracks_url = ("https://api.spotify.com/v1/artists/%s/top-tracks?market=US&limit=2" % artist['id'])
@@ -64,14 +65,15 @@ def search():
             if response.status_code == 200:
                 top_tracks_json = response.json()
                 print (top_tracks_json)
-                for i, track in enumerate(top_tracks_json['tracks']):
-                    track_obj = {
-                        'album': track['album']['name'],
-                        'popularity': track['popularity'],
-                        'releaseDate': track['album']['release_date'],
-                        'img': track['album']['images'][0]
-                    }
-                    top_tracks[track['name']] = track_obj
+                for track in top_tracks_json['tracks']:
+                    track_obj = Track(
+                        name=track['name'],
+                        album=track['album']['name'],
+                        popularity=track['popularity'],
+                        release_date=track['album']['release_date'],
+                        img=track['album']['images'][0]
+                    )
+                    top_tracks[track['name']] = track_obj.to_dict()
 
         return render_template('artist.html', artist=artist, tracks=top_tracks)
 
