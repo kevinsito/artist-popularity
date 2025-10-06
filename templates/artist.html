@@ -3,23 +3,29 @@
 {% block content %}
     <h1>{{ artist['name'] }}</h1>
     <br>
-    <div class="artist" style="background-image: url({{ artist.img.url }});">
-        <h3>Followers: {{ artist['followers'] }}</h3>
-        <h3>Popularity: {{ artist['popularity'] }}</h3>
+
+    <!-- Artist section with image on left, info on right -->
+    <div style="display: flex; align-items: center; margin-bottom: 2rem;">
+        <div class="artist" style="background-image: url({{ artist.img.url }}); margin-right: 2rem;"></div>
+        <div>
+            <h3>Followers: {{ artist['followers'] }}</h3>
+            <h3>Popularity: {{ artist['popularity'] }}</h3>
+        </div>
     </div>
 
     <br>
     <h1>Top Tracks:</h1>
     <ol>
     {% for name, track in tracks.items() %}
-        <li>
-            <div class="track thumbnail" style="background-image: url({{ track.img.url }});">
-                <h2>{{ name }}</h2>
+        <li style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+            <div class="track thumbnail" style="background-image: url({{ track.img.url }}); margin-right: 1.5rem;"></div>
+            <div>
+               <h2>{{ name }}</h2>
                 <h3>Popularity: {{ track.popularity }}</h3>
                 <h3>Album: {{ track.album }}</h3>
+                <h3>Release Date: {{ track.releaseDate }}</h3>
             </div>
         </li>
     {% endfor %}
-    </ul>
+    </ol>
 {% endblock %}
-

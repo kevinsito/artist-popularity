@@ -47,7 +47,7 @@ def search():
     if request.method == 'POST':
         search = urllib.parse.quote_plus(request.form['search'])
 
-        search_url = ("https://api.spotify.com/v1/search?type=artist&market=AU&limit=1&query=%s" % search)
+        search_url = ("https://api.spotify.com/v1/search?type=artist&market=US&limit=1&query=%s" % search)
         response = requests.get(search_url, headers=hed)
         if response.status_code == 200:
             search_json = response.json()
@@ -63,6 +63,7 @@ def search():
             response = requests.get(tracks_url, headers=hed)
             if response.status_code == 200:
                 top_tracks_json = response.json()
+                print (top_tracks_json)
                 for i, track in enumerate(top_tracks_json['tracks']):
                     track_obj = {
                         'album': track['album']['name'],
