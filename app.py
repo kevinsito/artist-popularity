@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from dotenv import load_dotenv
-from models import Artist, Track
+from models import Artist, Track, SimpleTrack, Album
 import requests
 import os
 import base64
@@ -49,7 +49,6 @@ def search():
         response = requests.get(search_url, headers=hed)
         if response.status_code == 200:
             search_json = response.json()
-            print (search_json)
             artist_obj = Artist(
                 id=search_json['artists']['items'][0]['id'],
                 name=search_json['artists']['items'][0]['name'],
@@ -64,18 +63,69 @@ def search():
             response = requests.get(tracks_url, headers=hed)
             if response.status_code == 200:
                 top_tracks_json = response.json()
-                print (top_tracks_json)
                 for track in top_tracks_json['tracks']:
                     track_obj = Track(
+                        id=track['id'],
                         name=track['name'],
                         album=track['album']['name'],
                         popularity=track['popularity'],
                         release_date=track['album']['release_date'],
-                        img=track['album']['images'][0]
+                        img=track['album']['images'][0],
+                        duration_ms=track['duration_ms']
                     )
                     top_tracks[track['name']] = track_obj.to_dict()
 
         return render_template('artist.html', artist=artist, tracks=top_tracks)
 
     return render_template('search.html')
+
+@app.route('/track/<id>')
+def track(id):
+    hed = { "Authorization": get_bearer_token() }
+    album = {}
+    track = {}
+
+    track_url = ("https://api.spotify.com/v1/tracks/%s?market=US&limit=1" % (id))
+    response = requests.get(track_url, headers=hed)
+    if response.status_code == 200:
+        track_json = response.json()
+        track_obj = Track(
+            id=track_json['id'],
+            name=track_json['name'],
+            album=track_json['album']['name'],
+            popularity=track_json['popularity'],
+            release_date=track_json['album']['release_date'],
+            img=track_json['album']['images'][0],
+            duration_ms=track_json['duration_ms']
+        )
+        track = track_obj.to_dict()
+
+        album_url = ("https://api.spotify.com/v1/albums/%s?market=US&limit=1" % (track_json['album']['id']))
+        response = requests.get(album_url, headers=hed)
+        if response.status_code == 200:
+            album_json = response.json()
+            album_tracks = []
+            for track_item in album_json['tracks']['items']:
+                album_tracks.append(SimpleTrack(
+                    id=track_item['id'],
+                    name=track_item['name'],
+                    track_number=track_item['track_number'],
+                    duration_ms=track_item['duration_ms']
+                ).to_dict())
+
+            album_obj = Album(
+                id=album_json['id'],
+                name=album_json['name'],
+                album_type=album_json['album_type'],
+                total_tracks=album_json['total_tracks'],
+                release_date=album_json['release_date'],
+                img=album_json['images'][0],
+                label=album_json['label'],
+                tracks=album_tracks
+            )
+            album = album_obj.to_dict()
+
+        return render_template('track.html', album=album, track=track)
+
+    return "Track not found", 404
     

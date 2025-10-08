@@ -20,12 +20,15 @@
         <li style="display: flex; align-items: center; margin-bottom: 1.5rem;">
             <div class="track thumbnail" style="background-image: url({{ track.img.url }}); margin-right: 1.5rem;"></div>
             <div>
-               <h2>{{ name }}</h2>
+                <a href="{{ url_for('track', id=track.id) }}">
+                   <h2>{{ name }}</h2>
+                </a>
                 <h3>Popularity: {{ track.popularity }}</h3>
                 <h3>Album: {{ track.album }}</h3>
-                <h3>Release Date: {{ track.releaseDate }}</h3>
             </div>
         </li>
     {% endfor %}
     </ol>
+
+    <a href="{{ url_for('search') }}" style="text-decoration: none;">← Back to Search</a>
 {% endblock %}
